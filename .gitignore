@@ -1,0 +1,7 @@
+pkg
+.DS_Store
+*.bak
+*.py[cdo]
+*.sublime*
+*.pub
+id_rsa
