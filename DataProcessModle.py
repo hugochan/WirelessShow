@@ -5,9 +5,9 @@ class DataProcess():
 	"""docstring for DataProcess"""
 	Shift_str = []
 	Offset = 0#位移偏移
-	del_t = 0.05#采样周期50ms
-	acc_rate = 0.1761#实际加速度值=acc_rate*accdata
-	shi_rate = 400#实际1m对应400像素点
+	del_t = 0.0025#采样周期2.5ms
+	acc_rate = 176.22#加速度传感器精度18mg/digit,成都地区g=9.79m/s2,故acc_rate=176.22ms/s2,实际加速度值=acc_rate*accdata
+	shi_rate = 4#实际1mm对应4像素点
 
 	def __init__(self, AccData):
 		count = 0
