@@ -25,10 +25,10 @@ class DataProcess():
 				acc_y.append(self.acc_rate*float(signedint_eachData))
 			count = (count + 1) % 2
 		
-		print 'acc_x'
-		print acc_x
-		print 'acc_y'
-		print acc_y
+		# print 'acc_x'
+		# print acc_x
+		# print 'acc_y'
+		# print acc_y
 
 		#通过加速度计算位移
 		shi_x = self.acc2shi(acc_x)
@@ -38,6 +38,7 @@ class DataProcess():
 		shift_x = self.shi2shift(shi_x)
 		shift_y = self.shi2shift(shi_y)
 
+		#make an adjustment for good display
 		count = 0
 		Datalength = min(len(shift_x), len(shift_y))
 		while count < Datalength:
@@ -50,8 +51,8 @@ class DataProcess():
 		for eachData in Data:
 			#将位移值转换为像素值(已求整)
 			Shift.append(int(self.shi_rate*eachData))
-		print 'Shift'
-		print Shift
+		# print 'Shift'
+		# print Shift
 		return Shift
 
 	def acc2shi(self, Data):
@@ -66,10 +67,10 @@ class DataProcess():
 			#由速度求得位移
 			Shi.append(Shi[count] + ((Vel[count] + Vel[count + 1])/2)*self.del_t)
 			count += 1
-		print 'Vel'
-		print  Vel
-		print 'Shi'
-		print Shi
+		# print 'Vel'
+		# print  Vel
+		# print 'Shi'
+		# print Shi
 		return Shi
 
 	def unsigned2signed(self, Data):

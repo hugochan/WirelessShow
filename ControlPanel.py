@@ -6,6 +6,7 @@ import os
 from wx.lib import buttons
 from myserial import myserial
 from DataProcessModle import DataProcess
+import pdb
 
 class ControlPanel(wx.Panel):
 
@@ -78,33 +79,116 @@ class ControlPanel(wx.Panel):
 		#event.Skip()
 
 	def Recv_Save_Datafile(self, event):
-		count = 0
-		#串口数据读取
-		serialdata = myserial().returndata()
-		print 'serialdata'
-		print serialdata
-		#将串口读到的加速度数据（尚未转换为有符号型）转换为位移数据
-		shift = DataProcess(serialdata).returndata()
-		print 'shift' 
-		print shift
+		#######################################
+		#shankhand
+		#######################################
+		print "console<<<start a shankhand~~~~"
+		#shankhand begin from reading information from lower computer
+		serialHandle = myserial(myTimeout=10)#max 10 secondes waiting
+		serialdata = serialHandle.read(mySize=6)#shankhand sign:"ready?" total length is exactly 6
+		#comfirm the shankhand sign:"ready?"
+		if serialdata != "ready?":
+			shankhandSuccess = False
+			print "console<<<shankhand Failure!"
+		else:
+			#sends the shankhand ack to lower computer
+			serialHandle.write("ok! ")#the end of the sign must be a space character for a easy recv
+			#recvs the shankhand ack2(index) from lower computer
+			serialHandle = myserial(myTimeout=1)
+			serialdata = serialHandle.read(mySize=1000)
+			indexRecg = "index"#the first five bytes are recognition sign "index" 
+			if serialdata[0:len(indexRecg)] != indexRecg:
+				shankhandSuccess = False
+				print "console<<<shankhand Failure!"
+			else:
+				shankhandSuccess = True
+				print "console<<<shankhand Success!"
+				
+				#############################################
+				#interConsole to display and choose a segment 
+				#############################################
+				print "console<<<index list for choosing~~~~"
+				#retrive indexList from every four bytes
+				tempIndexElement = []
+				tempIndexList = []
+				indexList = []# a index list
+				i = 0
+				uniIndexLength = 3#every 3 elements make up an integral index 
+				for eachserialdata in serialdata[len(indexRecg):]:
+					tempIndexElement.append(ord(eachserialdata))
+					if (i+1) % 4 == 0:#every 4 bytes make up an integral element
+						tempIndexList.append((tempIndexElement[0]<<24)+(tempIndexElement[1]<<16)+(tempIndexElement[2]<<8)+tempIndexElement[3])
+						tempIndexElement = []
+						if (i+1) % (uniIndexLength*4) == 0:
+							indexList.append(tempIndexList)
+							tempIndexList = []
+					i += 1
+				#display the index list
+				#print indexList
+				indexCount = 0
+				for eachIndexList in indexList:
+					print str(indexCount) + "、name:" + str(eachIndexList[1]) + " size:" +  str(eachIndexList[2]) + "bytes address:" + str(eachIndexList[0])
+					indexCount += 1
+				if indexCount == 0:
+					print "console<<<no index list for choosing~~~"
+					print "console<<<cancel~~~~"
+				else:
+					#choose an index list
+					print "console<<<choose a segment from 0 to " + str(indexCount-1) + "(-1 for cancel)~~~~" 
+					indexChoose = 0
+					chooseFlag = False
+					while indexChoose != -1:
+						# pdb.set_trace()
+						indexChoose = raw_input('> ')
+						try:
+							indexChoose = int(indexChoose)
+						except:
+							print "console<<<please input a valid choice~~~~"
+							continue
+						if indexChoose == -1:
+							print "console<<<cancel~~~~"
+							break
+						if indexChoose not in range(indexCount):
+							print "console<<<please input a valid choice~~~~"
+							continue
+						chooseFlag = True
+						break
 
-		dlg = wx.FileDialog(self, 'Save DataFile as...', os.getcwd(),
-						style=wx.SAVE | wx.OVERWRITE_PROMPT,
-						wildcard = self.wildcarddf)
-		if dlg.ShowModal() == wx.ID_OK:
-			datafilename = dlg.GetPath()
-			self.datafilename = datafilename
-			
-			f = open(self.datafilename, 'w')
-			while count < len(shift)-1:
-				f.write(shift[count])
-				f.write(' ')
-				count = count + 1
-			f.write(shift[count])
-			f.close()
+					if chooseFlag:
+						serialHandle.write(str(indexChoose)+" ")#choose No.0 segment, the end of the sign must be a space character for a easy recv
+						# pdb.set_trace()
+						serialdata = serialHandle.read(mySize=1000)
+						accSerialData = []
+						for eachserialdata in serialdata:
+							accSerialData.append(ord(eachserialdata))
+						# pdb.set_trace()#debug
+						print "console<<<No.0 segment acceleration datas~~~"
+						print accSerialData
 
-			self.parent.SetTitle(self.parent.title + ' -- ' + self.datafilename)
-			dlg.Destroy()
+						#change the unsigned acceleration datas to shift datas
+						shift = DataProcess(accSerialData).returndata()
+						print 'shift' 
+						print shift
+						
+						#save the acc data file
+						count = 0
+						dlg = wx.FileDialog(self, 'Save DataFile as...', os.getcwd(),
+										style=wx.SAVE | wx.OVERWRITE_PROMPT,
+										wildcard = self.wildcarddf)
+						if dlg.ShowModal() == wx.ID_OK:
+							datafilename = dlg.GetPath()
+							self.datafilename = datafilename
+							
+							f = open(self.datafilename, 'w')
+							while count < len(shift)-1:
+								f.write(shift[count])
+								f.write(' ')
+								count = count + 1
+							f.write(shift[count])
+							f.close()
+
+							self.parent.SetTitle(self.parent.title + ' -- ' + self.datafilename)
+							dlg.Destroy()
 
 		
 
