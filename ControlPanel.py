@@ -99,10 +99,10 @@ class ControlPanel(wx.Panel):
 			indexRecg = "index"#the first five bytes are recognition sign "index" 
 			if serialdata[0:len(indexRecg)] != indexRecg:
 				shankhandSuccess = False
-				print "console<<<shankhand Failure!"
+				print "console<<<shankhand Failure!!!!"
 			else:
 				shankhandSuccess = True
-				print "console<<<shankhand Success!"
+				print "console<<<shankhand Success~~~~"
 				
 				#############################################
 				#interConsole to display and choose a segment 
@@ -155,14 +155,29 @@ class ControlPanel(wx.Panel):
 						break
 
 					if chooseFlag:
-						serialHandle.write(str(indexChoose)+" ")#choose No.0 segment, the end of the sign must be a space character for a easy recv
+						#choose whether to delete that segment in lower computer
+						print "console<<<choose whether to delete the segment in lower computer(1 for yes and 0 for no)~~~~"
+						deleteChoose = " "
+						# pdb.set_trace()
+						while (deleteChoose != "0") | (deleteChoose != "1"):
+							deleteChoose = raw_input("> ")
+							if deleteChoose == "0":
+								deleteFlag = "N"
+								break
+							if deleteChoose == "1":
+								deleteFlag = "Y"
+								break
+							print "console<<<please input a valid choice~~~~"
+
+
+						serialHandle.write(str(indexChoose)+deleteFlag+" ")#choose and delete(or not)a segment, the end of the sign must be a space character for a easy recv
 						# pdb.set_trace()
 						serialdata = serialHandle.read(mySize=1000)
 						accSerialData = []
 						for eachserialdata in serialdata:
 							accSerialData.append(ord(eachserialdata))
 						# pdb.set_trace()#debug
-						print "console<<<No.0 segment acceleration datas~~~"
+						print "console<<<No." + str(indexChoose) + " segment acceleration datas~~~"
 						print accSerialData
 
 						#change the unsigned acceleration datas to shift datas
