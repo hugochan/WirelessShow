@@ -7,7 +7,7 @@ import sys
 class myserial():
 	"""serial for processing com data"""
 	data = []
-	def __init__(self, myBaudrate=9600, myTimeout=None):
+	def __init__(self, myBaudrate=19200, myTimeout=None):
 		try:
 			self.ser = serial.Serial(port='COM1', baudrate=myBaudrate, bytesize=8, 
 				timeout=myTimeout) #set the timeout = 1 second

@@ -135,5 +135,12 @@ class WirelessShowApp(wx.App):
 		return True
 
 if __name__ == '__main__':
+	print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+	print "###############################################"
+	print "############WirelessShow Console###############"
+	print "###############################################"
+	print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+	print ""
+	print "-----------------------------------------------"
 	app =WirelessShowApp(redirect=False)
 	app.MainLoop()
