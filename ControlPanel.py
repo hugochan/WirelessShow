@@ -105,7 +105,7 @@ class ControlPanel(wx.Panel):
 				print "console<<<shankhand Success~~~~"
 				
 				#############################################
-				#interConsole to display and choose a segment 
+				#interConsole to display a index list 
 				#############################################
 				print "console<<<index list for choosing~~~~"
 				#retrive indexList from every four bytes
@@ -133,7 +133,10 @@ class ControlPanel(wx.Panel):
 					print "console<<<no index list for choosing~~~"
 					print "console<<<cancel~~~~"
 				else:
-					#choose an index list
+					#############################################
+					#interConsole to choose a segment 
+					#############################################
+					#choose a segment
 					print "console<<<choose a segment from 0 to " + str(indexCount-1) + "(-1 for cancel)~~~~" 
 					indexChoose = 0
 					chooseFlag = False
@@ -155,7 +158,11 @@ class ControlPanel(wx.Panel):
 						break
 
 					if chooseFlag:
-						#choose whether to delete that segment in lower computer
+						#######################################################
+						#interConsole to choose whether to delete the segment
+						#which stored in lower computer
+						#######################################################
+						#choose whether to delete
 						print "console<<<choose whether to delete the segment in lower computer(1 for yes and 0 for no)~~~~"
 						deleteChoose = " "
 						# pdb.set_trace()
@@ -168,24 +175,41 @@ class ControlPanel(wx.Panel):
 								deleteFlag = "Y"
 								break
 							print "console<<<please input a valid choice~~~~"
-
-
-						serialHandle.write(str(indexChoose)+deleteFlag+" ")#choose and delete(or not)a segment, the end of the sign must be a space character for a easy recv
+						
+						serialHandle = myserial(myTimeout=2)
+						#the end of the sign must be a space character for a easy recv
+						serialHandle.write(str(indexChoose)+deleteFlag+" ")
 						# pdb.set_trace()
-						serialdata = serialHandle.read(mySize=1000)
+						
+						########################################################
+						#read serialdata from serial port and process the datas
+						########################################################
 						accSerialData = []
+						serialdata = serialHandle.read(mySize=2000)
+						#pay attention to the common situation where reading should be last for several times
+						# pdb.set_trace()
+						while len(serialdata) == 2000:
+							for eachserialdata in serialdata:
+								accSerialData.append(ord(eachserialdata))
+							serialdata = serialHandle.read(mySize=2000)
+						
 						for eachserialdata in serialdata:
 							accSerialData.append(ord(eachserialdata))
 						# pdb.set_trace()#debug
-						print "console<<<No." + str(indexChoose) + " segment acceleration datas~~~"
+						print "console<<<No." + str(indexChoose) + " segment acceleration datas received~~~"
 						print accSerialData
+						# print len(accSerialData)
 
 						#change the unsigned acceleration datas to shift datas
 						shift = DataProcess(accSerialData).returndata()
 						print 'shift' 
 						print shift
-						
-						#save the acc data file
+
+
+						#########################################
+						#gui for save the shift data file
+						#########################################
+						#save the shift data file
 						count = 0
 						dlg = wx.FileDialog(self, 'Save DataFile as...', os.getcwd(),
 										style=wx.SAVE | wx.OVERWRITE_PROMPT,
