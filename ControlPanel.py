@@ -6,7 +6,7 @@ import os
 from wx.lib import buttons
 from myserial import myserial
 from DataProcessModle import DataProcess
-import pdb
+# import pdb
 
 class ControlPanel(wx.Panel):
 
@@ -108,6 +108,7 @@ class ControlPanel(wx.Panel):
 				#interConsole to display a index list 
 				#############################################
 				print "console<<<index list for choosing~~~~"
+				print len(serialdata)
 				#retrive indexList from every four bytes
 				tempIndexElement = []
 				tempIndexList = []
@@ -131,6 +132,7 @@ class ControlPanel(wx.Panel):
 					indexCount += 1
 				if indexCount == 0:
 					print "console<<<no index list for choosing~~~"
+					serialHandle.write("seeyou")#send a seeyou message to lower computer to end the communication
 					print "console<<<cancel~~~~"
 				else:
 					#############################################
@@ -149,7 +151,8 @@ class ControlPanel(wx.Panel):
 							print "console<<<please input a valid choice~~~~"
 							continue
 						if indexChoose == -1:
-							print "console<<<cancel~~~~"
+							serialHandle.write("seeyou")#send a seeyou message to lower computer to end the communication
+							print "console<<<cancel~~~~"							
 							break
 						if indexChoose not in range(indexCount):
 							print "console<<<please input a valid choice~~~~"
@@ -173,6 +176,7 @@ class ControlPanel(wx.Panel):
 								break
 							if deleteChoose == "1":
 								deleteFlag = "Y"
+								print "console<<<No." + str(indexChoose) + " segment has been deleted in lower computer~~~"
 								break
 							print "console<<<please input a valid choice~~~~"
 						
@@ -197,19 +201,20 @@ class ControlPanel(wx.Panel):
 							accSerialData.append(ord(eachserialdata))
 						# pdb.set_trace()#debug
 						print "console<<<No." + str(indexChoose) + " segment acceleration datas received~~~"
-						print accSerialData
+						print "segment acceleration datas memory size：" + str(len(accSerialData))
 						# print len(accSerialData)
 
 						#change the unsigned acceleration datas to shift datas
 						shift = DataProcess(accSerialData).returndata()
-						print 'shift' 
-						print shift
-
+						print "shift length: " + str(len(shift))
+						# print len(shift)
+						
 
 						#########################################
 						#gui for save the shift data file
 						#########################################
 						#save the shift data file
+						print "console<<<want to save the datafile?"
 						count = 0
 						dlg = wx.FileDialog(self, 'Save DataFile as...', os.getcwd(),
 										style=wx.SAVE | wx.OVERWRITE_PROMPT,
@@ -228,7 +233,9 @@ class ControlPanel(wx.Panel):
 
 							self.parent.SetTitle(self.parent.title + ' -- ' + self.datafilename)
 							dlg.Destroy()
-
+							print "console<<<saved the datafile~~~"
+						else:
+							print "console<<<did not save the datafile~~~"
 		
 
 	def ReadDataFlie(self):
@@ -316,6 +323,7 @@ class ControlPanel(wx.Panel):
 		x_Offset = 0
 		y_Offset = 0
 		uni_Offset = 100
+		adjustmentFector = 100
 		LogicalDataOffset = []
 		for eachData in Data:#第一次遍历找到合适偏移量
 			if x_Offset > eachData[0]:
@@ -326,9 +334,9 @@ class ControlPanel(wx.Panel):
 		y_Offset = -y_Offset + uni_Offset
 
 		for eachData in Data:
-			LogicalDataOffset.append((eachData[0] + x_Offset, eachData[1] + y_Offset))
-		print 'LogicalDataOffset'
-		print LogicalDataOffset
+			LogicalDataOffset.append((int((eachData[0] + x_Offset)/adjustmentFector), int((eachData[1] + y_Offset)/adjustmentFector)))
+		# print 'LogicalDataOffset'
+		# print LogicalDataOffset
 		return LogicalDataOffset
 
 class ControlPanelFrame(wx.Frame):
