@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
+# import pdb
 class DataProcess():
 	"""docstring for DataProcess"""
-	Shift_str = []
 	Offset = 0#位移偏移
 	del_t = 0.0025#采样周期2.5ms
 	acc_rate = 176.22#加速度传感器精度18mg/digit,成都地区g=9.79m/s2,故acc_rate=176.22ms/s2,实际加速度值=acc_rate*accdata
@@ -15,6 +14,7 @@ class DataProcess():
 		acc_y = [0.0]
 		shi_x = []
 		shi_y = []
+		self.Shift_str = []
 		for eachData in AccData:
 			#将无符号整型转换为有符号整型(自行编写方法实现)
 			signedint_eachData = self.unsigned2signed(eachData)
@@ -26,9 +26,9 @@ class DataProcess():
 			count = (count + 1) % 2
 		
 		# print 'acc_x'
-		# print acc_x
+		# print len(acc_x)
 		# print 'acc_y'
-		# print acc_y
+		# print len(acc_y)
 
 		#通过加速度计算位移
 		shi_x = self.acc2shi(acc_x)
@@ -38,6 +38,10 @@ class DataProcess():
 		shift_x = self.shi2shift(shi_x)
 		shift_y = self.shi2shift(shi_y)
 
+		# print "shift_x"
+		# print len(shift_x)
+		# print "shift_y"
+		# print len(shift_y)
 		#make an adjustment for good display
 		count = 0
 		Datalength = min(len(shift_x), len(shift_y))
@@ -52,7 +56,7 @@ class DataProcess():
 			#将位移值转换为像素值(已求整)
 			Shift.append(int(self.shi_rate*eachData))
 		# print 'Shift'
-		# print Shift
+		# print len(Shift)
 		return Shift
 
 	def acc2shi(self, Data):
