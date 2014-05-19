@@ -1,13 +1,5 @@
-﻿<!DOCTYPE html>
-<html class="   ">
-  <head>
-  </head>
-
-
-  <body class="logged_in  env-production windows vis-public page-blob">
- 
-<h1>
-<p>wirelessShow</p></h1>
+﻿ <h2>
+<a name="WirelessShow" class="anchor" href="#WirelessShow"><span class="octicon octicon-link"></span></a>WirelessShow</h2>
 <p>一个用python实现的<strong>图形绘制软件</strong>，可接收串口传递的加速度数据并通过计算绘制出图形<strong>轨迹</strong>……</p>
 
 <h2>
@@ -69,8 +61,4 @@ refer to <a href="https://github.com/hugochan/wirelessShow_lowerComputer">hugoch
 <h3>
 	<p>系统效果图</p></h3>
 &nbsp;&nbsp;&nbsp;&nbsp;<img src="./image/系统实测图.jpg" height="300" width="500" alt="系统实测图"></img>
-
-
-</body>
-</html>
 
