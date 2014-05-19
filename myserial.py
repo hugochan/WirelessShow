@@ -14,7 +14,6 @@ class myserial():
 		except:
 			print "upper Computer<<<Error: Failed to Open COM!"
 			sys.exit()
-		# print "upper Computer<<<Succeeded to Open COM!"
 		self.ser.close() #close a COM
 		# self.COM = self.ser.portstr
 	

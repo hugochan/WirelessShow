@@ -124,7 +124,7 @@ available at http://www.wxpython.org/
 
 class WirelessShowApp(wx.App):
 	def OnInit(self):
-		bmp = wx.Image("splash.jpg").ConvertToBitmap()
+		bmp = wx.Image("image/splash.jpg").ConvertToBitmap()
 		wx.SplashScreen(bmp, wx.SPLASH_CENTRE_ON_SCREEN | wx.SPLASH_TIMEOUT,
 			1000, None, -1)
 		wx.Yield()
